@@ -1,0 +1,44 @@
+{
+    "name": "migratetoflarum/itemlist-order",
+    "description": "Change the order or itemlist content",
+    "keywords": [
+        "extension",
+        "flarum",
+        "itemlist",
+        "order"
+    ],
+    "type": "flarum-extension",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Clark Winkelmann",
+            "email": "clark.winkelmann@gmail.com",
+            "homepage": "https://clarkwinkelmann.com/"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/migratetoflarum/itemlist-order/issues",
+        "source": "https://github.com/migratetoflarum/itemlist-order"
+    },
+    "require": {
+        "flarum/core": "^0.1.0-beta.8"
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Itemlist Order",
+            "icon": {
+                "name": "fas fa-random",
+                "backgroundColor": "#e7672e",
+                "color": "#fafafa"
+            }
+        },
+        "flagrow": {
+            "discuss": "https://discuss.flarum.org/d/????"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "MigrateToFlarum\\ItemlistOrder\\": "src/"
+        }
+    }
+}
