@@ -4,6 +4,7 @@ import ItemList from 'flarum/utils/ItemList';
 import Button from 'flarum/components/Button';
 import applyCustomListItemOrdering from './utils/applyCustomListItemOrdering';
 import EditorModal from './components/EditorModal';
+import getStoredConfigForItemList from './utils/getStoredConfigForItemList';
 
 /* global flarum */
 
@@ -33,20 +34,24 @@ function extendList(object, method, name) {
             return items;
         }
 
-        if (app.forum.data.attributes.itemorderConfig && app.forum.data.attributes.itemorderConfig.hasOwnProperty(name)) {
-            applyCustomListItemOrdering(items, app.forum.data.attributes.itemorderConfig[name]);
+        const config = getStoredConfigForItemList(name);
+
+        if (config) {
+            applyCustomListItemOrdering(items, config);
         }
 
-        items.add('itemlist-order-control', Button.component({
-            onclick(event) {
-                event.stopPropagation(); // Prevent dropdowns from closing
-                edit = true;
-            },
-            icon: 'fas fa-random',
-            className: 'Button',
-            children: 'Edit order',
-            title: name,
-        }), -11000);
+        if (localStorage.getItem('migratetoflarum-itemlist-order-mode') === 'edit') {
+            items.add('itemlist-order-control', Button.component({
+                onclick(event) {
+                    event.stopPropagation(); // Prevent dropdowns from closing
+                    edit = true;
+                },
+                icon: 'fas fa-random',
+                className: 'Button',
+                children: 'Edit order',
+                title: name,
+            }), -11000);
+        }
 
         return items;
     });
@@ -65,8 +70,8 @@ function extendListByName(objectName, methodName) {
 app.initializers.add('migratetoflarum-itemlist-order', () => {
     extendListByName('components/CommentPost', 'headerItems');
     extendListByName('components/DiscussionComposer', 'headerItems');
-    extendListByName('components/DiscussionHero', 'items'); // TODO: post redraw strategy
-    extendListByName('components/DiscussionListItem', 'infoItems');
+    //extendListByName('components/DiscussionHero', 'items'); // TODO: post redraw strategy
+    //extendListByName('components/DiscussionListItem', 'infoItems'); // TODO: clicking visits discussion
     extendListByName('components/DiscussionPage', 'sidebarItems');
     extendListByName('components/HeaderPrimary', 'items');
     extendListByName('components/HeaderSecondary', 'items');

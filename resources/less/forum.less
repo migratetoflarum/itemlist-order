@@ -11,6 +11,9 @@
     }
 }*/
 
+@mtf-itemlist-orange: #e7672e;
+@mtf-itemlist-light: #fafafa;
+
 .Itemlist-Order-Item {
     //background: rgba(230, 230, 230, 0.8);
     position: relative;
@@ -51,11 +54,11 @@
     }
 
     .Modal-header {
-        background: #e7672e;
+        background: @mtf-itemlist-orange;
     }
 
     .Modal-header, .Modal-close .Button {
-        color: #fafafa;
+        color: @mtf-itemlist-light;
     }
 
     .Modal-close .Button:hover {
@@ -84,4 +87,9 @@
             width: 100%;
         }
     }
+}
+
+.item-itemlist-order-control .Button {
+    background: @mtf-itemlist-orange;
+    color: @mtf-itemlist-light;
 }

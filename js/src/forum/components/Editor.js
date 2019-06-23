@@ -2,7 +2,9 @@ import app from 'flarum/app';
 import icon from 'flarum/helpers/icon';
 import Component from 'flarum/Component';
 import Button from 'flarum/components/Button';
+import Alert from 'flarum/components/Alert';
 import itemListToArrayWithoutExtractingContent from '../utils/itemListToArrayWithoutExtractingContent';
+import getStoredConfigForItemList from '../utils/getStoredConfigForItemList';
 
 /* global m */
 
@@ -10,12 +12,17 @@ export default class Editor extends Component {
     init() {
         super.init();
 
-        this.itemsOrder = {
+        const config = getStoredConfigForItemList(this.props.name);
+
+        this.itemsOrder = config || {
             start: [],
             end: [],
             hidden: [],
         };
+
         this.dirty = false;
+        this.loading = false;
+        this.saved = false;
     }
 
     view() {
@@ -79,6 +86,7 @@ export default class Editor extends Component {
                                 this.dirty = true;
                             }
                         },
+                        disabled: this.loading,
                     }, icon('fas fa-angle-up')),
                     m('button.Button.Button--link', {
                         title: 'Move down',
@@ -105,6 +113,7 @@ export default class Editor extends Component {
                                 this.dirty = true;
                             }
                         },
+                        disabled: this.loading,
                     }, icon('fas fa-angle-down')),
                     m('button.Button.Button--link', {
                         title: 'Hide',
@@ -118,6 +127,7 @@ export default class Editor extends Component {
                                 removeFromHidden();
                             }
                         },
+                        disabled: this.loading,
                     }, icon('fas fa-eye' + (indexInHidden === -1 ? '-slash' : ''))),
                     m('button.Button.Button--link', {
                         title: 'Restore default position',
@@ -126,6 +136,7 @@ export default class Editor extends Component {
                             removeFromEnd();
                             removeFromHidden();
                         },
+                        disabled: this.loading,
                     }, icon('fas fa-undo')),
                 ]),
             ]);
@@ -164,17 +175,34 @@ export default class Editor extends Component {
         }
 
         return m('.ItemList-Order-Editor', [
+            this.saved ? Alert.component({
+                type: 'info',
+                dismissible: true,
+                ondismiss: () => {
+                    this.saved = false;
+                },
+                children: 'Saved !',
+            }) : null,
             Button.component({
                 onclick: () => {
-                    app.forum.data.attributes.itemorderConfig = app.forum.data.attributes.itemorderConfig || {};
+                    this.loading = true;
 
-                    app.forum.data.attributes.itemorderConfig[this.props.name] = this.itemsOrder;
-
-                    this.props.finishedEdit();
+                    app.request({
+                        method: 'POST',
+                        url: app.forum.attribute('apiUrl') + '/itemlist-order/' + this.props.name,
+                        data: this.itemsOrder,
+                    }).then(result => {
+                        this.loading = false;
+                        this.saved = true;
+                        this.dirty = false;
+                        app.forum.data.attributes.itemorderConfig = result;
+                        m.redraw();
+                    });
                 },
                 className: 'Button Button--primary',
                 children: 'Save',
                 disabled: !this.dirty,
+                loading: this.loading,
             }),
             ' ',
             Button.component({
@@ -184,15 +212,17 @@ export default class Editor extends Component {
                         end: [],
                         hidden: [],
                     };
+                    this.dirty = true;
                 },
                 icon: 'fas fa-undo',
                 className: 'Button',
                 children: 'Restore default order',
+                disabled: this.loading,
             }),
             m('div', [
                 m('h4', {
                     key: 'head-start',
-                },'Before'),
+                }, 'Before'),
                 sectionsContent('start', 'Move elements up to place them here'),
                 m('h4', {
                     key: 'head-default',
@@ -200,11 +230,11 @@ export default class Editor extends Component {
                 defaultContent,
                 m('h4', {
                     key: 'head-end',
-                },'After'),
+                }, 'After'),
                 sectionsContent('end', 'Move elements down to place them here'),
                 m('h4', {
                     key: 'head-hidden',
-                },'Hidden'),
+                }, 'Hidden'),
                 sectionsContent('hidden', 'You have not hidden any element'),
             ]),
         ]);

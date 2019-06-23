@@ -11,6 +11,10 @@ export default class EditorModal extends Component {
         return m('.Itemlist-Order-Modal', [
             m('.ModalManager.modal.fade', {
                 onclick: event => {
+                    // When we create the modal as a child of a dropdown, we need to stop propagation
+                    // Otherwise any click would close the dropdown and hide the modal
+                    event.stopPropagation();
+
                     // Close modal when backdrop is clicked
                     if (event.target.classList.contains('ModalManager')) {
                         this.close();
@@ -28,7 +32,6 @@ export default class EditorModal extends Component {
                 m('.Modal-body', Editor.component({
                     items: this.props.items,
                     name: this.props.name,
-                    finishedEdit: this.close.bind(this),
                 })),
             ]))),
             m('.modal-backdrop.fade.in'),
