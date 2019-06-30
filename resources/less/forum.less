@@ -1,21 +1,7 @@
-/*.ItemList-Order-Editor {
-    border: 2px solid orange;
-    border-radius: 5px;
-    padding: 5px;
-    background: white;
-
-    // Prevent editor from going offscreen
-    .Composer & {
-        position: fixed;
-        bottom: 0;
-    }
-}*/
-
 @mtf-itemlist-orange: #e7672e;
 @mtf-itemlist-light: #fafafa;
 
 .Itemlist-Order-Item {
-    //background: rgba(230, 230, 230, 0.8);
     position: relative;
     min-height: 50px;
     margin: 5px 0;
@@ -33,13 +19,7 @@
 }
 
 .Itemlist-Order-Actions {
-    //white-space: nowrap;
-    //background: rgba(230, 230, 230, 0.8);
     border-left: 2px dashed #dedede;
-    //position: absolute;
-    //z-index: 1000;
-    //top: 0;
-    //left: 100%;
     margin: 5px 5px 5px 0;
     padding-left: 5px;
 }
@@ -87,9 +67,25 @@
             width: 100%;
         }
     }
+
+    // Cancel custom button styling when the modal is a child of UserCard
+    .UserCard .Button, .UserCard .Button:hover {
+        color: inherit;
+        background: inherit;
+    }
 }
 
 .item-itemlist-order-control .Button {
     background: @mtf-itemlist-orange;
     color: @mtf-itemlist-light;
+}
+
+// Show the editor when it's the first child of a SplitDropdown
+// by default that element is hidden and shown as the primary control of the SplitDropdown
+.Dropdown--split {
+    @media @tablet-up {
+        .Dropdown-menu li.item-itemlist-order-editor {
+            display: block;
+        }
+    }
 }

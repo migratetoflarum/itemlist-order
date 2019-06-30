@@ -9,7 +9,7 @@ import Editor from './Editor';
 export default class EditorModal extends Component {
     view() {
         return m('.Itemlist-Order-Modal', [
-            m('.ModalManager.modal.fade', {
+            m('form.ModalManager.modal.fade', {
                 onclick: event => {
                     // When we create the modal as a child of a dropdown, we need to stop propagation
                     // Otherwise any click would close the dropdown and hide the modal
@@ -19,6 +19,10 @@ export default class EditorModal extends Component {
                     if (event.target.classList.contains('ModalManager')) {
                         this.close();
                     }
+                },
+                onsubmit: event => {
+                    // Having a form inside of our modal prevents submitting other modals when we are a child of them
+                    event.preventDefault();
                 },
             }, m('.Modal.modal-dialog', m('.Modal-content', [
                 m('.Modal-close', Button.component({
